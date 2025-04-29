@@ -1,76 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Price Lookup</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 2rem;
-        background: #f5f5f5;
-      }
-      h1 {
-        color: #333;
-      }
-      input[type="text"] {
-        padding: 0.5rem;
-        width: 100%;
-        max-width: 400px;
-        margin-bottom: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      .result {
-        background: white;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Price Lookup</h1>
-    <input type="text" id="searchInput" placeholder="Search for a product..." />
-    <div id="results"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price Lookup</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+    h1 { color: #333; }
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .result {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Price Lookup</h1>
+  <input type="text" id="searchInput" placeholder="Search for a product..." />
+  <div id="results"></div>
 
-    <script>
-      const sheetID = "18koeqwdzJ612S8NT701NaM-Z_FwjfibqxWgXH21VuRU";
-      const sheetName = "Prices";
-      const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+  <script>
+    const sheetID = "18koeqwdzJ612S8NT701NaM-Z_FwjfibqxWgXH21VuRU";
+    const sheetName = "Prices";
+    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
 
-      document
-        .getElementById("searchInput")
-        .addEventListener("input", async function () {
-          const query = this.value.toLowerCase();
-          if (!query)
-            return (document.getElementById("results").innerHTML = "");
+    document.getElementById('searchInput').addEventListener('input', async function () {
+      const query = this.value.toLowerCase();
+      if (!query) return document.getElementById('results').innerHTML = '';
 
-          const response = await fetch(url);
-          const text = await response.text();
-          const json = JSON.parse(text.substr(47).slice(0, -2));
-          const rows = json.table.rows;
+      const response = await fetch(url);
+      const text = await response.text();
+      const json = JSON.parse(text.substr(47).slice(0, -2));
+      const rows = json.table.rows;
 
-          const filtered = rows.filter(row =>
-            row.c[0]?.v?.toLowerCase().includes(query)
-          );
-          const html = filtered
-            .map(
-              row => `
+      const filtered = rows.filter(row => row.c[0]?.v?.toLowerCase().includes(query));
+      const html = filtered.map(row => `
         <div class="result">
-          <strong>Produto:</strong> ${row.c[0]?.v || "—"}<br>
-          <strong>Preço:</strong> ${row.c[1]?.v || "—"}<br>
-          <strong>Loja:</strong> ${row.c[2]?.v || "—"}<br>
-          <strong>Data:</strong> ${row.c[3]?.v || "—"}
+          <strong>Produto:</strong> ${row.c[0]?.v || '—'}<br>
+          <strong>Marca:</strong> ${row.c[1]?.v || '—'}<br>
+          <strong>Preço:</strong> ${row.c[2]?.v || '—'}<br>
+          <strong>Data:</strong> ${row.c[3]?.v || '—'}<br>
+          <strong>Categoria:</strong> ${row.c[4]?.v || '—'}
         </div>
-      `
-            )
-            .join("");
+      `).join('');
 
-          document.getElementById("results").innerHTML =
-            html || "<p>Nenhum resultado encontrado.</p>";
-        });
-    </script>
-  </body>
+      document.getElementById('results').innerHTML = html || '<p>Nenhum resultado encontrado.</p>';
+    });
+  </script>
+</body>
 </html>
