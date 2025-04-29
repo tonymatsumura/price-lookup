@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Price Lookup with Barcode</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <title>Price Lookup</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; margin: 0; }
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
     h1 { color: #333; }
     input[type="text"] {
       padding: 0.5rem;
@@ -23,33 +22,22 @@
       margin-bottom: 1rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    #barcode-scanner {
-      width: 100%;
-      max-width: 480px;
-      height: 240px;
-      margin-bottom: 1rem;
-      background-color: #000;
-      overflow: hidden;
-      position: relative;
-    }
-    canvas, video {
-      width: 100% !important;
-      height: auto !important;
-    }
   </style>
 </head>
 <body>
-  <h1>Price Lookup with Barcode</h1>
-  <div id="barcode-scanner"></div>
+  <h1>Price Lookup</h1>
   <input type="text" id="searchInput" placeholder="Search for a product..." />
   <div id="results"></div>
 
   <script>
-    const sheetID = 'YOUR_SHEET_ID';
-    const sheetName = 'Sheet1';
+    const sheetID = "18koeqwdzJ612S8NT701NaM-Z_FwjfibqxWgXH21VuRU";
+    const sheetName = "Prices";
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
 
-    async function fetchData(query) {
+    document.getElementById('searchInput').addEventListener('input', async function () {
+      const query = this.value.toLowerCase();
+      if (!query) return document.getElementById('results').innerHTML = '';
+
       const response = await fetch(url);
       const text = await response.text();
       const json = JSON.parse(text.substr(47).slice(0, -2));
@@ -62,50 +50,12 @@
           <strong>Marca:</strong> ${row.c[1]?.v || '—'}<br>
           <strong>Preço:</strong> ${row.c[2]?.v || '—'}<br>
           <strong>Data:</strong> ${row.c[3]?.v || '—'}<br>
-          <strong>Categoria:</strong> ${row.c[4]?.v || '—'}
+          <strong>Categoria:</strong> ${row.c[4]?.v || '—'}<br>
+          <strong>Promoção:</strong> ${row.c[5]?.v || '—'}
         </div>
       `).join('');
 
       document.getElementById('results').innerHTML = html || '<p>Nenhum resultado encontrado.</p>';
-    }
-
-    document.getElementById('searchInput').addEventListener('input', function () {
-      const query = this.value.toLowerCase();
-      if (!query) return document.getElementById('results').innerHTML = '';
-      fetchData(query);
-    });
-
-    // Barcode scanning setup
-    Quagga.init({
-      inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.querySelector('#barcode-scanner'),
-        constraints: {
-          width: 480,
-          height: 240,
-          facingMode: "environment"
-        }
-      },
-      decoder: {
-        readers: ["ean_reader", "ean_8_reader", "code_128_reader"]
-      }
-    }, function (err) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      Quagga.start();
-    });
-
-    let lastScanned = null;
-    Quagga.onDetected(data => {
-      const code = data.codeResult.code;
-      if (code !== lastScanned) {
-        lastScanned = code;
-        document.getElementById('searchInput').value = code;
-        fetchData(code.toLowerCase());
-      }
     });
   </script>
 </body>
