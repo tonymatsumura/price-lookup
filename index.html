@@ -30,28 +30,24 @@
   <div id="results"></div>
 
   <script>
-    const sheetID = "18koeqwdzJ612S8NT701NaM-Z_FwjfibqxWgXH21VuRU";
-    const sheetName = "Prices";
-    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+    const url = "/api/prices";
 
     document.getElementById('searchInput').addEventListener('input', async function () {
       const query = this.value.toLowerCase();
       if (!query) return document.getElementById('results').innerHTML = '';
 
       const response = await fetch(url);
-      const text = await response.text();
-      const json = JSON.parse(text.substr(47).slice(0, -2));
-      const rows = json.table.rows;
+      const data = await response.json();
 
-      const filtered = rows.filter(row => row.c[0]?.v?.toLowerCase().includes(query));
-      const html = filtered.map(row => `
+      const filtered = data.filter(item => item.produto.toLowerCase().includes(query));
+      const html = filtered.map(item => `
         <div class="result">
-          <strong>Produto:</strong> ${row.c[0]?.v || '—'}<br>
-          <strong>Marca:</strong> ${row.c[1]?.v || '—'}<br>
-          <strong>Preço:</strong> ${row.c[2]?.v || '—'}<br>
-          <strong>Data:</strong> ${row.c[3]?.v || '—'}<br>
-          <strong>Categoria:</strong> ${row.c[4]?.v || '—'}<br>
-          <strong>Promoção:</strong> ${row.c[5]?.v || '—'}
+          <strong>Produto:</strong> ${item.produto || '—'}<br>
+          <strong>Marca:</strong> ${item.marca || '—'}<br>
+          <strong>Preço:</strong> ${item.preco || '—'}<br>
+          <strong>Data:</strong> ${item.data || '—'}<br>
+          <strong>Categoria:</strong> ${item.categoria || '—'}<br>
+          <strong>Promoção:</strong> ${item.promocao || '—'}
         </div>
       `).join('');
 
