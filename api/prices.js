@@ -12,12 +12,12 @@ export default async function handler(req, res) {
     const rows = json.table.rows;
 
     const data = rows.map(row => ({
-      produto: row.c[1]?.v || '',
-      marca: row.c[2]?.v || '',
-      preco: row.c[3]?.v || '',
-      data: row.c[4]?.v || '',
-      categoria: row.c[5]?.v || '',
-      promocao: row.c[6]?.v || ''
+      produto: row.c[0]?.v || '',
+      marca: row.c[1]?.v || '',
+      preco: row.c[2]?.v || '',
+      data: row.c[3]?.v || '',
+      categoria: row.c[4]?.v || '',
+      promocao: row.c[5]?.v || ''
     }));
 
     res.status(200).json(data);
