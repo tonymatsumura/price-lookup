@@ -41,10 +41,7 @@
       const rows = json.table.rows;
 
       const filtered = rows.filter(row =>
-        row.c[0]?.v?.toLowerCase().includes(query) || // Barcode
-        row.c[1]?.v?.toLowerCase().includes(query) || // Produto
-        row.c[2]?.v?.toLowerCase().includes(query) || // Marca
-        row.c[5]?.v?.toLowerCase().includes(query)    // Categoria
+        row.c[1]?.v?.toLowerCase().includes(query) // Produto
       );
 
       const html = filtered.map(row => `
