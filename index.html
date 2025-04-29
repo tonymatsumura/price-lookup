@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Price Lookup with Barcode</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <title>Price Lookup</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; margin: 0; }
     h1 { color: #333; }
@@ -23,24 +22,10 @@
       margin-bottom: 1rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    #barcode-scanner {
-      width: 100%;
-      max-width: 480px;
-      height: 240px;
-      margin-bottom: 1rem;
-      background-color: #000;
-      overflow: hidden;
-      position: relative;
-    }
-    canvas, video {
-      width: 100% !important;
-      height: auto !important;
-    }
   </style>
 </head>
 <body>
-  <h1>Price Lookup with Barcode</h1>
-  <div id="barcode-scanner"></div>
+  <h1>Price Lookup</h1>
   <input type="text" id="searchInput" placeholder="Search for a product..." />
   <div id="results"></div>
 
@@ -81,39 +66,6 @@
       const query = this.value.toLowerCase();
       if (!query) return document.getElementById('results').innerHTML = '';
       fetchData(query);
-    });
-
-    // Barcode scanning setup
-    Quagga.init({
-      inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.querySelector('#barcode-scanner'),
-        constraints: {
-          width: 480,
-          height: 240,
-          facingMode: "environment"
-        }
-      },
-      decoder: {
-        readers: ["ean_reader", "ean_8_reader", "code_128_reader"]
-      }
-    }, function (err) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      Quagga.start();
-    });
-
-    let lastScanned = null;
-    Quagga.onDetected(data => {
-      const code = data.codeResult.code;
-      if (code !== lastScanned) {
-        lastScanned = code;
-        document.getElementById('searchInput').value = code;
-        fetchData(code.toLowerCase());
-      }
     });
   </script>
 </body>
