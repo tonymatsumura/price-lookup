@@ -43,7 +43,7 @@
       const json = JSON.parse(text.substr(47).slice(0, -2));
       const rows = json.table.rows;
 
-      const filtered = rows.filter(row => row.c[0]?.v?.toLowerCase().includes(query));
+      const filtered = rows.filter(row => row.c[1]?.v?.toLowerCase().includes(query));
       const html = filtered.map(row => `
         <div class="result">
           <strong>Produto:</strong> ${row.c[1]?.v || '—'}<br>
