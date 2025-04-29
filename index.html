@@ -30,9 +30,19 @@
   <div id="results"></div>
 
   <script>
-    const sheetID = 'YOUR_SHEET_ID';
-    const sheetName = 'Sheet1';
+    const sheetID = "18koeqwdzJ612S8NT701NaM-Z_FwjfibqxWgXH21VuRU";
+    const sheetName = "Prices";
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+
+    const stopwords = [' de ', ' da ', ' do ', ' com ', ' e ', ' a ', ' o '];
+
+    function cleanText(text) {
+      let cleaned = ' ' + text.toLowerCase() + ' ';
+      stopwords.forEach(word => {
+        cleaned = cleaned.replaceAll(word, ' ');
+      });
+      return cleaned.trim().replace(/\s+/g, ' ');
+    }
 
     async function fetchData(query) {
       const response = await fetch(url);
@@ -40,9 +50,12 @@
       const json = JSON.parse(text.substr(47).slice(0, -2));
       const rows = json.table.rows;
 
-      const filtered = rows.filter(row =>
-        row.c[1]?.v?.toLowerCase().includes(query) // Produto
-      );
+      const cleanedQuery = cleanText(query);
+
+      const filtered = rows.filter(row => {
+        const productName = row.c[1]?.v?.toLowerCase() || '';
+        return cleanText(productName).includes(cleanedQuery);
+      });
 
       const html = filtered.map(row => `
         <div class="result">
@@ -60,8 +73,8 @@
     }
 
     document.getElementById('searchInput').addEventListener('input', function () {
-      const query = this.value.toLowerCase();
-      if (!query) return document.getElementById('results').innerHTML = '';
+      const query = this.value;
+      if (!query.trim()) return document.getElementById('results').innerHTML = '';
       fetchData(query);
     });
   </script>
