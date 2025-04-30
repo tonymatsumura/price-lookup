@@ -55,14 +55,9 @@
             .map(
               item => `
         <div class="result">
-          <strong>Produto:</strong> ${item.produto || "—"}<br>
-          <!--<strong>Marca:</strong> ${item.marca || "—"}<br> -->
-          <strong>Preço:</strong> ${item.preco || "—"}<br>
-          <!--<strong>Data:</strong> ${item.data || "—"}<br>
-          <strong>Categoria:</strong> ${item.categoria || "—"}<br>
-          <strong>Promoção:</strong> ${item.promocao || "—"} --> 
-        </div>
-      `
+          ${item.produto || "—"}<br>          
+          ${item.preco || "—"}<br>          
+        </div>      `
             )
             .join("");
 
