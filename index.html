@@ -1,58 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Price Lookup</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
-    h1 { color: #333; }
-    input[type="text"] {
-      padding: 0.5rem;
-      width: 100%;
-      max-width: 400px;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .result {
-      background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
-  <h1>Price Lookup</h1>
-  <input type="text" id="searchInput" placeholder="Search for a product..." />
-  <div id="results"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Price Lookup</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 2rem;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+      }
+      input[type="text"] {
+        padding: 0.5rem;
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .result {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Price Lookup</h1>
+    <input type="text" id="searchInput" placeholder="Search for a product..." />
+    <div id="results"></div>
 
-  <script>
-    const url = "/api/prices";
+    <script>
+      //const url = "http://localhost:3000/api/prices"; // Or use the full Google Sheets AP
+      const url = "/api/prices";
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", async function () {
+          const query = this.value.toLowerCase();
+          if (!query)
+            return (document.getElementById("results").innerHTML = "");
 
-    document.getElementById('searchInput').addEventListener('input', async function () {
-      const query = this.value.toLowerCase();
-      if (!query) return document.getElementById('results').innerHTML = '';
+          const response = await fetch(url);
+          const data = await response.json();
 
-      const response = await fetch(url);
-      const data = await response.json();
-
-      const filtered = data.filter(item => item.produto.toLowerCase().includes(query));
-      const html = filtered.map(item => `
-        <div class="result">
-          <strong>Produto:</strong> ${item.produto || '—'}<br>
-          <strong>Marca:</strong> ${item.marca || '—'}<br>
-          <strong>Preço:</strong> ${item.preco || '—'}<br>
-          <strong>Data:</strong> ${item.data || '—'}<br>
-          <strong>Categoria:</strong> ${item.categoria || '—'}<br>
-          <strong>Promoção:</strong> ${item.promocao || '—'}
+          const filtered = data.filter(item =>
+            item.produto.toLowerCase().includes(query)
+          );
+          const html = filtered
+            .map(
+              item => `
+        <<div class="result">
+          <strong>Produto:</strong> ${item.produto || "—"}<br>
+          <!--<strong>Marca:</strong> ${item.marca || "—"}<br> -->
+          <strong>Preço:</strong> ${item.preco || "—"}<br>
+          <!--<strong>Data:</strong> ${item.data || "—"}<br>
+          <strong>Categoria:</strong> ${item.categoria || "—"}<br>
+          <strong>Promoção:</strong> ${item.promocao || "—"} --> 
         </div>
-      `).join('');
+      `
+            )
+            .join("");
 
-      document.getElementById('results').innerHTML = html || '<p>Nenhum resultado encontrado.</p>';
-    });
-  </script>
-</body>
+          document.getElementById("results").innerHTML =
+            html || "<p>Nenhum resultado encontrado.</p>";
+        });
+    </script>
+  </body>
 </html>
