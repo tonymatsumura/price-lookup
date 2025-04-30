@@ -48,9 +48,11 @@
           const response = await fetch(url);
           const data = await response.json();
 
-          const filtered = data.filter(item =>
-            item.produto.toLowerCase().includes(query)
-          );
+          const filtered = data.filter(item => {
+            const product = item.produto.toLowerCase();
+            const words = query.toLowerCase().split(/\s+/);
+            return words.every(word => product.includes(word));
+          });
           const html = filtered
             .map(
               item => `
