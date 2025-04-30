@@ -32,40 +32,59 @@
   </head>
   <body>
     <h1>Price Lookup</h1>
+
     <input type="text" id="searchInput" placeholder="Search for a product..." />
+    <button id="searchButton">Search</button>
+
     <div id="results"></div>
 
-    <script>
+    <script type="module">
+      import { containsAllRequiredWords } from "./Utils/Utils.js";
       //const url = "http://localhost:3000/api/prices"; // Or use the full Google Sheets AP
-      const url = "/api/prices";
-      document
-        .getElementById("searchInput")
-        .addEventListener("input", async function () {
-          const query = this.value.toLowerCase();
-          if (!query)
-            return (document.getElementById("results").innerHTML = "");
+      const url = "http://localhost:3000/api/prices";
 
-          const response = await fetch(url);
-          const data = await response.json();
+      // Get the button and input elements from the DOM
+      const searchButton = document.getElementById("searchButton");
+      const searchInput = document.getElementById("searchInput");
+      const resultsDiv = document.getElementById("results");
 
-          const filtered = data.filter(item => {
-            const product = item.produto.toLowerCase();
-            const words = query.toLowerCase().split(/\s+/);
-            return words.every(word => product.includes(word));
-          });
-          const html = filtered
-            .map(
-              item => `
-        <div class="result">
-          ${item.produto || "—"}<br>          
-          ${item.preco || "—"}<br>          
-        </div>      `
-            )
-            .join("");
+      // Trigger search on button click
+      searchButton.addEventListener("click", async function () {
+        console.log("Button clicked");
 
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (!query) {
           document.getElementById("results").innerHTML =
-            html || "<p>Nenhum resultado encontrado.</p>";
+            "Please enter a search term.";
+          return (document.getElementById("results").innerHTML = "");
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const filtered = data.filter(item => {
+          return containsAllRequiredWords(item.produto, query);
         });
+
+        console.log(filtered);
+
+        const html = filtered
+          .map(
+            item => `
+            <div class="result">
+              <strong>Produto:</strong> ${item.produto || "—"}<br>          
+              <strong>Preço:</strong> ${
+                item.preco || "—"
+              }<br>                   
+            </div>
+            `
+          )
+          .join("");
+
+        document.getElementById("results").innerHTML =
+          html || "<p>Nenhum resultado encontrado.</p>";
+      });
     </script>
   </body>
 </html>
