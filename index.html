@@ -13,52 +13,80 @@
       h1 {
         color: #333;
       }
-      input[type="text"] {
+      .input-container {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border-radius: 25px;
         padding: 0.5rem;
-        width: 100%;
-        max-width: 400px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
         margin-bottom: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: large;
       }
-      button {
+
+      input[type="text"] {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 1rem;
         padding: 0.5rem 1rem;
-        font-size: large;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #4caf50;
+        border-radius: 25px;
+      }
+
+      button {
+        background-color: #25d366; /* WhatsApp green */
+        border: none;
         color: white;
+        padding: 0.5rem 1rem;
+        margin-left: 0.5rem;
+        border-radius: 50%;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        margin-left: 0.5rem;
+        font-size: 1.2rem;
       }
 
       button:hover {
-        background-color: #45a049;
+        background-color: #1ebe5d;
       }
 
       .result {
+        display: flex;
+        align-items: center;
         background: white;
         border-radius: 8px;
-        padding: 8px;
-        margin-bottom: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .result img {
+        max-width: 100px;
+        height: auto;
+        margin-right: 1rem;
+        border-radius: 5px;
+      }
+
+      .result-text {
+        flex: 1;
       }
     </style>
   </head>
   <body>
     <h1>Price Lookup</h1>
-
-    <input type="text" id="searchInput" placeholder="Search for a product..." />
-    <button id="searchButton">Search</button>
+    <div class="input-container">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search for a product..." />
+      <button id="searchButton">🔍</button>
+    </div>
 
     <div id="results"></div>
 
     <script type="module">
       import { containsAllRequiredWords } from "./Utils/Utils.js";
-      const url = "/api/prices"; // Or use the full Google Sheets AP
-      
+      //const url = "/api/prices"; // Or use the full Google Sheets AP
+      const url = "http://localhost:3000/api/prices";
 
       // Get the button and input elements from the DOM
       const searchButton = document.getElementById("searchButton");
@@ -124,8 +152,8 @@
             item => `
             <div class="result">
               ${item.produto || "—"}<br>          
-              ${item.preco || "—"}  
-              (${item.data || "—"})<br>
+              R$ ${item.preco || "—"}<br>  
+              Data: ${item.data || "—"}
               <img src=${item.thumbnail || "—"}
               }<br>                   
             </div>
