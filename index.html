@@ -9,9 +9,12 @@
         font-family: Arial, sans-serif;
         padding: 8px;
         background: #f5f5f5;
+        margin-top: 1rem;
       }
       h1 {
         color: #333;
+        text-align: center;
+        margin-bottom: 1rem;
       }
       .input-container {
         display: flex;
@@ -30,23 +33,8 @@
         outline: none;
         font-size: 1.2rem;
         padding: 0.5rem 1rem;
-        max-width: 80%
+        max-width: 80%;
         border-radius: 15px;
-      }
-
-      button {
-        background-color: #ffffff00; /* WhatsApp green */
-        border: none;
-        color: white;
-        margin-left: 5rem;
-        border-radius: 10%;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        font-size: 1rem;
-      }
-
-      button:hover {
-        background-color: #b8b9b9;
       }
 
       .result {
@@ -66,12 +54,65 @@
         border-radius: 5px;
       }
 
-      .result-text {
-        flex: 1;
+      .menu-container {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1000;
+      }
+
+      .hamburger {
+        font-size: 24px;
+        cursor: pointer;
+        background: #fff;
+        border-radius: 4px;
+        padding: 6px 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border: none;
+      }
+
+      .dropdown {
+        display: none;
+        position: absolute;
+        top: 2.8rem; /* below the hamburger */
+        left: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        min-width: 160px;
+      }
+
+      .dropdown button {
+        width: 100%;
+        padding: 10px;
+        background: white;
+        border: none;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .dropdown button:last-child {
+        border-bottom: none;
+      }
+
+      .dropdown button:hover {
+        background: #f5f5f5;
       }
     </style>
   </head>
   <body>
+    <div class="menu-container">
+      <div class="hamburger" onclick="toggleMenu()">☰</div>
+      <div class="dropdown" id="supermarketMenu">
+        <button onclick="selectSupermarket('Farid')">Farid</button>
+        <button onclick="selectSupermarket('Bh')">Bh</button>
+        <button onclick="selectSupermarket('Epa')">Epa</button>
+      </div>
+    </div>
+
     <h1>Price Lookup</h1>
     <div class="input-container">
       <input
@@ -168,6 +209,19 @@
         document.getElementById("results").innerHTML =
           html || "<p>Nenhum resultado encontrado.</p>";
       });
+    </script>
+    <script>
+      function toggleMenu() {
+        const menu = document.getElementById("supermarketMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      }
+
+      function selectSupermarket(name) {
+        alert("Selected supermarket: " + name);
+        // Optionally set a global variable or reload data
+        // e.g., currentSupermarket = name;
+        document.getElementById("supermarketMenu").style.display = "none";
+      }
     </script>
   </body>
 </html>
