@@ -85,8 +85,12 @@
 
     <script type="module">
       import { containsAllRequiredWords } from "./Utils/Utils.js";
-      const url = "/api/prices"; // Or use the full Google Sheets AP
-      
+      let url = "http://localhost:3000/api/prices";
+      if (window.location.hostname === "localhost") {
+        url = "http://localhost:3000/api/prices";
+      } else {
+        url = "https://price-lookup.vercel.app/api/prices"; // Replace with your actual production URL
+      }
 
       // Get the button and input elements from the DOM
       const searchButton = document.getElementById("searchButton");
