@@ -14,8 +14,9 @@ export default async function handler(req, res) {
     const rows = json.table.rows;
 
     const data = rows.map(row => ({
-      produto: row.c[0]?.v || "",      
-      preco: row.c[1]?.v || "",      
+      produto: row.c[0]?.v || "",
+      preco: row.c[1]?.v || "",
+      thumbnail: row.c[2]?.v || "",
     }));
 
     res.status(200).json(data);
