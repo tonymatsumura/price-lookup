@@ -7,7 +7,7 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        padding: 2rem;
+        padding: 8px;
         background: #f5f5f5;
       }
       h1 {
@@ -41,8 +41,8 @@
       .result {
         background: white;
         border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+        padding: 8px;
+        margin-bottom: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
     </style>
@@ -57,7 +57,8 @@
 
     <script type="module">
       import { containsAllRequiredWords } from "./Utils/Utils.js";
-      const url = "/api/prices"; // Or use the full Google Sheets AP      
+      const url = "/api/prices"; // Or use the full Google Sheets AP
+      
 
       // Get the button and input elements from the DOM
       const searchButton = document.getElementById("searchButton");
