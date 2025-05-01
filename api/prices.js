@@ -8,7 +8,6 @@ export default async function handler(req, res) {
 
     const response = await fetch(url);
     const text = await response.text();
-    console.log("Raw response text:", text);
 
     const json = JSON.parse(text.substr(47).slice(0, -2));
     const rows = json.table.rows;
@@ -17,6 +16,7 @@ export default async function handler(req, res) {
       produto: row.c[0]?.v || "",
       preco: row.c[1]?.v || "",
       thumbnail: row.c[2]?.v || "",
+      data: row.c[3]?.v || "",
     }));
 
     res.status(200).json(data);
