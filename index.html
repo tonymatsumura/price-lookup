@@ -41,7 +41,8 @@
     <script type="module">
       import { containsAllRequiredWords } from "./Utils/Utils.js";
       const url = "/api/prices"; // Or use the full Google Sheets AP
-      
+      //const url = "http://localhost:3000/api/prices";
+
       // Get the button and input elements from the DOM
       const searchButton = document.getElementById("searchButton");
       const searchInput = document.getElementById("searchInput");
@@ -70,12 +71,33 @@
         const filtered = data.filter(item => {
           return containsAllRequiredWords(item.produto, query);
         });
-
+        /*
         // Sort by item.preco (ascending)
         filtered.sort((a, b) => {
           const priceA = parseFloat(a.preco) || Infinity;
           const priceB = parseFloat(b.preco) || Infinity;
           return priceA - priceB;
+        });
+*/
+        console.log(`query: ${query}`);
+        let splited_query = query.split(" ");
+        console.log(`splited_query: ${splited_query}`);
+        let first_word = splited_query[0];
+
+        // Sort by: 1) name starts with first_word, 2) price
+        filtered.sort((a, b) => {
+          const aStartsWithBacon = a.produto
+            .toLowerCase()
+            .startsWith(first_word);
+          const bStartsWithBacon = b.produto
+            .toLowerCase()
+            .startsWith(first_word);
+
+          if (aStartsWithBacon !== bStartsWithBacon) {
+            return aStartsWithBacon ? -1 : 1;
+          }
+
+          return a.preco - b.preco;
         });
 
         console.log(filtered);
