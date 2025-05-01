@@ -17,7 +17,7 @@
         display: flex;
         align-items: center;
         background-color: white;
-        border-radius: 25px;
+        border-radius: 15px;
         padding: 0.5rem;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         max-width: 500px;
@@ -28,25 +28,25 @@
         flex: 1;
         border: none;
         outline: none;
-        font-size: 1rem;
+        font-size: 1.2rem;
         padding: 0.5rem 1rem;
         border-radius: 25px;
       }
 
       button {
-        background-color: #25d366; /* WhatsApp green */
+        background-color: #ffffff; /* WhatsApp green */
         border: none;
         color: white;
         padding: 0.5rem 1rem;
         margin-left: 0.5rem;
-        border-radius: 50%;
+        border-radius: 10%;
         cursor: pointer;
         transition: background-color 0.3s ease;
         font-size: 1.2rem;
       }
 
       button:hover {
-        background-color: #1ebe5d;
+        background-color: #b8b9b9;
       }
 
       .result {
@@ -85,8 +85,7 @@
 
     <script type="module">
       import { containsAllRequiredWords } from "./Utils/Utils.js";
-      const url = "/api/prices"; // Or use the full Google Sheets AP
-      
+      const url = "/api/prices"; // Or use the full Google Sheets AP      
 
       // Get the button and input elements from the DOM
       const searchButton = document.getElementById("searchButton");
