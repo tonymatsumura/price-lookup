@@ -4,112 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Price Lookup</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 8px;
-        background: #f5f5f5;
-        margin-top: 1rem;
-      }
-      h1 {
-        color: #333;
-        text-align: center;
-        margin-bottom: 1rem;
-      }
-      .input-container {
-        display: flex;
-        align-items: center;
-        background-color: white;
-        border-radius: 15px;
-        padding: 0.5rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        max-width: 100%;
-        margin-bottom: 1rem;
-      }
-
-      input[type="text"] {
-        flex: 1;
-        border: none;
-        outline: none;
-        font-size: 1.2rem;
-        padding: 0.5rem 1rem;
-        max-width: 80%;
-        border-radius: 15px;
-      }
-
-      .result {
-        display: flex;
-        align-items: center;
-        background: white;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-
-      .result img {
-        max-width: 100px;
-        height: auto;
-        margin-right: 1rem;
-        border-radius: 5px;
-      }
-
-      .menu-container {
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
-        z-index: 1000;
-      }
-
-      .hamburger {
-        font-size: 24px;
-        cursor: pointer;
-        background: #fff;
-        border-radius: 4px;
-        padding: 6px 12px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        border: none;
-      }
-
-      .dropdown {
-        display: none;
-        position: absolute;
-        top: 2.8rem; /* below the hamburger */
-        left: 0;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        min-width: 160px;
-      }
-
-      .dropdown button {
-        width: 100%;
-        padding: 10px;
-        background: white;
-        border: none;
-        border-bottom: 1px solid #eee;
-        text-align: left;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .dropdown button:last-child {
-        border-bottom: none;
-      }
-
-      .dropdown button:hover {
-        background: #f5f5f5;
-      }
-    </style>
+    <link rel="stylesheet" href="index.css" />
+    <!-- Added link to index.css -->
   </head>
   <body>
     <div class="menu-container">
       <div class="hamburger" onclick="toggleMenu()">☰</div>
       <div class="dropdown" id="supermarketMenu">
-        <button onclick="selectSupermarket('Farid')">Farid</button>
-        <button onclick="selectSupermarket('Bh')">Bh</button>
-        <button onclick="selectSupermarket('Epa')">Epa</button>
+        <button class="btn_hamburguer" onclick="selectSupermarket('Farid')">
+          Farid
+        </button>
+        <button class="btn_hamburguer" onclick="selectSupermarket('Bh')">
+          Bh
+        </button>
+        <button class="btn_hamburguer" onclick="selectSupermarket('Epa')">
+          Epa
+        </button>
       </div>
     </div>
 
