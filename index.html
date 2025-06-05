@@ -1,422 +1,137 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plano de Pesquisa Interativo: IA e Lean na Construção</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutrals & Tech Blue -->
-    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard, not a linear document. It starts with the core problem (the "why"), moves to the central interactive solution (the "what"), visualizes the impact (the "so what"), and details the execution (the "how"). This structure was chosen to guide the user from the high-level concept to the details in a logical, engaging flow, making the complex research plan more accessible than a simple text document. Key interactions include clicking on model components to reveal details and selecting research objectives to see the methodology. -->
-    <!-- Visualization & Content Choices: 
-    - Problem Section: Report Info (Desafios da construção) -> Goal (Inform) -> Viz/Presentation (Icon-based cards) -> Interaction (Hover highlight) -> Justification (Quickly digestible summary of core issues).
-    - Integrated Model: Report Info (IA, Lean, Sustentabilidade) -> Goal (Explain & Organize) -> Viz/Presentation (Interactive diagram with HTML/CSS) -> Interaction (Click to reveal detailed text) -> Justification (Visually represents the synergy of the three pillars, encouraging exploration).
-    - Impact Chart: Report Info (Tabela 1 - Desafios e Contribuições) -> Goal (Compare) -> Viz/Presentation (Dynamic Bar Chart) -> Interaction (Select dropdown to update chart) -> Justification (Quantifies the model's expected impact on each challenge, making it more concrete) -> Library/Method (Chart.js/Canvas).
-    - Methodology Timeline: Report Info (Objetivos Específicos & Tabela 2) -> Goal (Organize & Detail) -> Viz/Presentation (Interactive vertical stepper/timeline) -> Interaction (Click to expand details) -> Justification (Transforms a list into a clear, step-by-step research plan).
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f7f4;
-            color: #383838;
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Price Lookup</title>
+    <link rel="stylesheet" href="index.css" />
+    <!-- Added link to index.css -->
+  </head>
+  <body>
+    <div class="menu-container">
+      <div class="hamburger" onclick="toggleMenu()">☰</div>
+      <div class="dropdown" id="supermarketMenu">
+        <button class="btn_hamburguer" onclick="selectSupermarket('Farid')">
+          Farid
+        </button>
+        <button class="btn_hamburguer" onclick="selectSupermarket('Bh')">
+          Bh
+        </button>
+        <button class="btn_hamburguer" onclick="selectSupermarket('Epa')">
+          Epa
+        </button>
+      </div>
+    </div>
+
+    <h1>Price Lookup</h1>
+    <div class="input-container">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search for a product..." />
+      <button id="searchButton">🔍</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script type="module">
+      import { containsAllRequiredWords } from "./Utils/Utils.js";
+      let url = "http://localhost:3000/api/prices";
+      if (window.location.hostname === "localhost") {
+        url = "http://localhost:3000/api/prices";
+      } else {
+        url = "https://price-lookup.vercel.app/api/prices"; // Replace with your actual production URL
+      }
+
+      // Get the button and input elements from the DOM
+      const searchButton = document.getElementById("searchButton");
+      const searchInput = document.getElementById("searchInput");
+      const resultsDiv = document.getElementById("results");
+
+      // Trigger search when Enter is pressed
+      searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          searchButton.click();
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 400px;
+      });
+
+      // Trigger search on button click
+      searchButton.addEventListener("click", async function () {
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (!query) {
+          document.getElementById("results").innerHTML =
+            "Please enter a search term.";
+          return (document.getElementById("results").innerHTML = "");
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-        .nav-link {
-            transition: color 0.3s, border-bottom-color 0.3s;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-link:hover, .nav-link.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
-        }
-        .step-connector {
-            position: absolute;
-            top: 1.5rem;
-            left: calc(0.75rem - 1px);
-            width: 2px;
-            height: calc(100% - 1.5rem);
-            background-color: #d1d5db;
-        }
-         .step-circle {
-            transition: background-color 0.3s, border-color 0.3s;
-         }
-        .step.active .step-circle {
-            background-color: #2563eb;
-            border-color: #2563eb;
-            color: white;
-        }
-        .model-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .model-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-    </style>
-</head>
-<body class="antialiased">
 
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-blue-800">Pesquisa Interativa</h1>
-            <div class="hidden md:flex space-x-8">
-                <a href="#problema" class="nav-link">O Problema</a>
-                <a href="#solucao" class="nav-link">A Solução</a>
-                <a href="#impacto" class="nav-link">Impacto</a>
-                <a href="#plano" class="nav-link">Plano de Execução</a>
-            </div>
-        </nav>
-    </header>
+        const response = await fetch(url);
+        const data = await response.json();
 
-    <main class="container mx-auto px-6 py-8 md:py-16">
-        <section id="hero" class="text-center mb-20">
-            <h2 class="text-3xl md:text-5xl font-bold mb-4 text-gray-800">Otimização de Processos na Construção Civil</h2>
-            <p class="text-lg md:text-xl max-w-4xl mx-auto text-gray-600">Uma abordagem integrada com Inteligência Artificial, Lean Construction e Sustentabilidade para revolucionar o setor no contexto da Indústria 4.0.</p>
-        </section>
-
-        <section id="problema" class="mb-20">
-            <div class="text-center mb-12">
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-800">O Cenário Atual: Desafios Críticos</h3>
-                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">A construção civil, apesar de sua importância vital, enfrenta desafios históricos que limitam sua eficiência, aumentam custos e geram impactos ambientais significativos. Esta seção destaca os principais problemas que o projeto visa solucionar.</p>
-            </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
-                    <h4 class="text-xl font-bold mb-2">Baixa Produtividade</h4>
-                    <p class="text-gray-600">Processos ineficientes e falta de automação resultam em atrasos e aumento de custos operacionais.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
-                    <h4 class="text-xl font-bold mb-2">Desperdício de Materiais</h4>
-                    <p class="text-gray-600">A má gestão de recursos leva a um alto volume de desperdício, impactando custos e o meio ambiente.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <h4 class="text-xl font-bold mb-2">Impacto Ambiental Elevado</h4>
-                    <p class="text-gray-600">Alto consumo de energia, emissões de GEE e geração de resíduos sólidos pressionam o setor.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                    <h4 class="text-xl font-bold mb-2">Ineficiência na Alocação de Recursos</h4>
-                    <p class="text-gray-600">Alocação inadequada de mão de obra e equipamentos gera retrabalho e prazos estendidos.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
-                    <h4 class="text-xl font-bold mb-2">Falta de Previsibilidade</h4>
-                    <p class="text-gray-600">Dificuldade em prever prazos e custos com precisão, levando a estouros de orçamento.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-gray-500">
-                    <h4 class="text-xl font-bold mb-2">Condições Variáveis</h4>
-                    <p class="text-gray-600">A falta de adaptabilidade a imprevistos (clima, material) reduz a resiliência das operações.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="solucao" class="mb-20">
-            <div class="text-center mb-12">
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-800">A Solução: Um Modelo Integrado e Dinâmico</h3>
-                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Para superar os desafios, propomos um modelo que integra três pilares fundamentais. A sinergia entre eles cria um sistema inteligente, eficiente e resiliente. Clique em cada componente para explorar seu papel na solução.</p>
-            </div>
-            <div class="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-0">
-                <div id="card-ia" class="model-card w-full lg:w-1/3 p-6 bg-white rounded-lg shadow-lg cursor-pointer text-center border-b-4 border-blue-600">
-                    <div class="text-4xl mb-4">🧠</div>
-                    <h4 class="text-xl font-bold">Inteligência Artificial (IA)</h4>
-                </div>
-                <div class="text-4xl text-gray-400 mx-5 font-bold">+</div>
-                <div id="card-lean" class="model-card w-full lg:w-1/3 p-6 bg-white rounded-lg shadow-lg cursor-pointer text-center border-b-4 border-yellow-600">
-                    <div class="text-4xl mb-4">⚙️</div>
-                    <h4 class="text-xl font-bold">Lean Construction</h4>
-                </div>
-                 <div class="text-4xl text-gray-400 mx-5 font-bold">+</div>
-                <div id="card-sust" class="model-card w-full lg:w-1/3 p-6 bg-white rounded-lg shadow-lg cursor-pointer text-center border-b-4 border-green-600">
-                   <div class="text-4xl mb-4">🌍</div>
-                    <h4 class="text-xl font-bold">Sustentabilidade</h4>
-                </div>
-            </div>
-            <div id="solution-details" class="mt-12 bg-white p-8 rounded-lg shadow-inner min-h-[200px] flex items-center justify-center">
-                <p class="text-gray-500 text-center">Selecione um componente acima para ver os detalhes.</p>
-            </div>
-        </section>
-
-        <section id="impacto" class="mb-20">
-            <div class="text-center mb-12">
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-800">Visualizando o Impacto do Modelo</h3>
-                 <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Como o modelo integrado realmente soluciona os problemas? Esta seção oferece uma comparação visual do impacto esperado do modelo nos principais desafios da construção. Selecione um desafio para ver a análise.</p>
-            </div>
-            <div class="bg-white p-8 rounded-lg shadow-lg">
-                <div class="flex flex-col md:flex-row justify-center items-center mb-6">
-                    <label for="challenge-selector" class="mr-4 font-semibold text-lg">Selecione um Desafio:</label>
-                    <select id="challenge-selector" class="p-2 border rounded-md shadow-sm">
-                    </select>
-                </div>
-                <div class="chart-container">
-                    <canvas id="impactChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <section id="plano">
-            <div class="text-center mb-12">
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-800">Plano de Execução da Pesquisa</h3>
-                 <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">O sucesso do projeto depende de uma metodologia robusta e bem estruturada. A pesquisa será conduzida em quatro fases principais, cada uma com objetivos, métodos e entregáveis claros. Clique em cada etapa para explorar os detalhes.</p>
-            </div>
-            <div class="flex flex-col md:flex-row gap-12">
-                <div class="w-full md:w-1/3">
-                    <div id="steps-container" class="space-y-4">
-                    </div>
-                </div>
-                <div class="w-full md:w-2/3 bg-white p-8 rounded-lg shadow-inner min-h-[300px]">
-                    <div id="plan-details">
-                        <p class="text-gray-500 text-center">Selecione uma etapa do plano para ver os detalhes.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-gray-800 text-white mt-20">
-        <div class="container mx-auto px-6 py-4 text-center">
-            <p>&copy; 2025 Plano de Pesquisa Interativo. Todos os direitos reservados.</p>
-            <p class="text-sm text-gray-400 mt-1">Uma visualização do projeto de doutorado sobre otimização na construção civil.</p>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            const solutionDetailsData = {
-                ia: {
-                    title: '🧠 Inteligência Artificial (IA)',
-                    content: 'A IA é o cérebro do modelo. Utiliza algoritmos de machine learning para processar dados do canteiro de obras em tempo real, prever falhas, identificar gargalos e otimizar a alocação de recursos. Ela transforma dados brutos em insights acionáveis, permitindo uma tomada de decisão proativa e baseada em evidências, movendo-se da previsão (o que vai acontecer) para a prescrição (o que deve ser feito).'
-                },
-                lean: {
-                    title: '⚙️ Lean Construction',
-                    content: 'A Lean Construction é a metodologia de gestão que foca na eliminação sistemática de desperdícios e na melhoria contínua. No nosso modelo, os insights gerados pela IA alimentam os ciclos Lean, permitindo identificar e erradicar ineficiências (como tempo de espera, retrabalho, excesso de estoque) de forma muito mais precisa e ágil, garantindo um fluxo de trabalho otimizado e eficiente.'
-                },
-                sust: {
-                    title: '🌍 Sustentabilidade',
-                    content: 'A sustentabilidade não é um adendo, mas um pilar central. O modelo incorpora restrições e objetivos ambientais diretamente nos algoritmos de otimização. Ele simula o impacto ambiental de diferentes cenários, promovendo ativamente o uso eficiente de materiais e energia, a redução de resíduos e o controle das emissões de carbono, alinhando a eficiência produtiva com a responsabilidade ambiental.'
-                }
-            };
-
-            const solutionContainer = document.getElementById('solution-details');
-            document.getElementById('card-ia').addEventListener('click', () => updateSolutionDetails('ia'));
-            document.getElementById('card-lean').addEventListener('click', () => updateSolutionDetails('lean'));
-            document.getElementById('card-sust').addEventListener('click', () => updateSolutionDetails('sust'));
-
-            function updateSolutionDetails(key) {
-                const data = solutionDetailsData[key];
-                solutionContainer.innerHTML = `
-                    <div class="text-left">
-                        <h4 class="text-2xl font-bold mb-4 text-blue-800">${data.title}</h4>
-                        <p class="text-lg text-gray-700">${data.content}</p>
-                    </div>
-                `;
-            }
-
-            const impactData = {
-                "Baixa Produtividade": [80, 25],
-                "Desperdício de Materiais": [75, 20],
-                "Impactos Ambientais": [85, 30],
-                "Ineficiência na Alocação de Recursos": [70, 15],
-                "Falta de Previsibilidade": [90, 20],
-                "Condições Variáveis (Resiliência)": [30, 80]
-            };
-            
-            const selector = document.getElementById('challenge-selector');
-            Object.keys(impactData).forEach(key => {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = key;
-                selector.appendChild(option);
-            });
-
-            const ctx = document.getElementById('impactChart').getContext('2d');
-            const impactChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Estado Atual (Problema)', 'Com Modelo Proposto (Solução)'],
-                    datasets: [{
-                        label: 'Nível do Desafio/Impacto',
-                        data: impactData[selector.value],
-                        backgroundColor: [
-                            'rgba(239, 68, 68, 0.6)',
-                            'rgba(37, 99, 235, 0.6)'
-                        ],
-                        borderColor: [
-                            'rgba(239, 68, 68, 1)',
-                            'rgba(37, 99, 235, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Índice de Impacto (0-100)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                             callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        if (context.label === 'Estado Atual (Problema)') {
-                                            label += `Alto impacto (${context.parsed.y})`;
-                                        } else {
-                                             label += `Impacto reduzido (${context.parsed.y})`;
-                                        }
-                                    }
-                                    if(selector.value === "Condições Variáveis (Resiliência)"){
-                                         if (context.label === 'Estado Atual (Problema)') {
-                                            label = `Baixa Resiliência (${context.parsed.y})`;
-                                        } else {
-                                             label = `Alta Resiliência (${context.parsed.y})`;
-                                        }
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            selector.addEventListener('change', (e) => {
-                impactChart.data.datasets[0].data = impactData[e.target.value];
-                impactChart.update();
-            });
-            
-            const planData = [
-                {
-                    id: 'oe1',
-                    title: 'OE1: Análise Crítica dos Desafios',
-                    method: 'Revisão Sistemática da Literatura, Análise de Dados Existentes, Entrevistas com Especialistas.',
-                    result: 'Relatório de Diagnóstico de Desafios e Desperdícios; Definição de Requisitos do Modelo.',
-                    deliverable: 'Artigo de Revisão da Literatura, Documento de Requisitos.'
-                },
-                {
-                    id: 'oe2',
-                    title: 'OE2: Desenvolvimento dos Modelos Matemáticos',
-                    method: 'Design da Arquitetura, Formulação Matemática, Desenvolvimento de Algoritmos de IA (Machine Learning).',
-                    result: 'Modelo Computacional Integrado Protótipo; Algoritmos de Otimização e IA Desenvolvidos.',
-                    deliverable: 'Documentação Técnica, Códigos-fonte dos Algoritmos, Artigo Científico.'
-                },
-                {
-                    id: 'oe3',
-                    title: 'OE3: Incorporação de Práticas Sustentáveis',
-                    method: 'Definição de KPIs de Sustentabilidade, Integração de Módulos de Simulação Ambiental, Otimização de Uso de Materiais e Energia.',
-                    result: 'Módulo de Sustentabilidade Integrado e Funcional; Relatórios de Simulação de Impacto Ambiental.',
-                    deliverable: 'Artigo Científico (sustentabilidade), Módulo de Software.'
-                },
-                {
-                    id: 'oe4',
-                    title: 'OE4: Validação do Modelo em Obras Reais',
-                    method: 'Seleção de Estudos de Caso, Coleta de Dados em Campo, Análise Comparativa de Desempenho, Avaliação Qualitativa.',
-                    result: 'Relatório de Validação e Ganhos Quantificáveis (Produtividade, Eficiência, Redução de Impactos).',
-                    deliverable: 'Artigo Científico (validação), Capítulos da Tese, Relatório de Implementação.'
-                }
-            ];
-
-            const stepsContainer = document.getElementById('steps-container');
-            const planDetailsContainer = document.getElementById('plan-details');
-
-            planData.forEach((step, index) => {
-                const stepEl = document.createElement('div');
-                stepEl.className = 'step relative pl-8 pb-8 cursor-pointer';
-                stepEl.dataset.id = step.id;
-                
-                if (index < planData.length -1) {
-                    stepEl.innerHTML += `<div class="step-connector"></div>`;
-                }
-
-                stepEl.innerHTML += `
-                    <div class="step-circle absolute left-0 top-0 w-6 h-6 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center font-bold text-gray-500">${index + 1}</div>
-                    <h5 class="font-bold text-lg text-gray-700">${step.title}</h5>
-                `;
-                stepsContainer.appendChild(stepEl);
-            });
-            
-            const stepElements = document.querySelectorAll('.step');
-
-            stepElements.forEach(el => {
-                el.addEventListener('click', () => {
-                    const stepId = el.dataset.id;
-                    const stepData = planData.find(s => s.id === stepId);
-                    
-                    stepElements.forEach(s => s.classList.remove('active'));
-                    el.classList.add('active');
-
-                    planDetailsContainer.innerHTML = `
-                        <h4 class="text-2xl font-bold mb-4 text-blue-800">${stepData.title}</h4>
-                        <div class="space-y-4 text-lg">
-                            <div><strong class="text-gray-800">Metodologia:</strong> <span class="text-gray-600">${stepData.method}</span></div>
-                            <div><strong class="text-gray-800">Resultados Esperados:</strong> <span class="text-gray-600">${stepData.result}</span></div>
-                            <div><strong class="text-gray-800">Entregáveis:</strong> <span class="text-gray-600">${stepData.deliverable}</span></div>
-                        </div>
-                    `;
-                });
-            });
-            
-            const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('main section');
-
-            window.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (pageYOffset >= sectionTop - 100) {
-                        current = section.getAttribute('id');
-                    }
-                });
-
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${current}`) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-
-            navLinks.forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-            if (stepElements.length > 0) {
-                stepElements[0].click();
-            }
+        const filtered = data.filter(item => {
+          return containsAllRequiredWords(item.produto, query);
         });
+        /*
+        // Sort by item.preco (ascending)
+        filtered.sort((a, b) => {
+          const priceA = parseFloat(a.preco) || Infinity;
+          const priceB = parseFloat(b.preco) || Infinity;
+          return priceA - priceB;
+        });
+*/
+        console.log(`query: ${query}`);
+        let splited_query = query.split(" ");
+        console.log(`splited_query: ${splited_query}`);
+        let first_word = splited_query[0];
+
+        // Sort by: 1) name starts with first_word, 2) price
+        filtered.sort((a, b) => {
+          const aStartsWithBacon = a.produto
+            .toLowerCase()
+            .startsWith(first_word);
+          const bStartsWithBacon = b.produto
+            .toLowerCase()
+            .startsWith(first_word);
+
+          if (aStartsWithBacon !== bStartsWithBacon) {
+            return aStartsWithBacon ? -1 : 1;
+          }
+
+          return a.preco - b.preco;
+        });
+
+        console.log(filtered);
+
+        const html = filtered
+          .map(
+            item => `
+            <div class="result">
+              ${item.produto || "—"}<br>          
+              R$ ${item.preco || "—"}<br>  
+              Data: ${item.data || "—"}
+              <img src=${item.thumbnail || "—"}
+              }<br>                   
+            </div>
+            `
+          )
+          .join("");
+
+        document.getElementById("results").innerHTML =
+          html || "<p>Nenhum resultado encontrado.</p>";
+      });
     </script>
-</body>
+    <script>
+      function toggleMenu() {
+        const menu = document.getElementById("supermarketMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      }
+
+      function selectSupermarket(name) {
+        alert("Selected supermarket: " + name);
+        // Optionally set a global variable or reload data
+        // e.g., currentSupermarket = name;
+        document.getElementById("supermarketMenu").style.display = "none";
+      }
+    </script>
+  </body>
 </html>
