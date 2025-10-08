@@ -9,6 +9,7 @@ export default async function handler(req, res) {
 
     const response = await fetch(url);
     const text = await response.text();
+    console.log("text:", text);
 
     const json = JSON.parse(text.substr(47).slice(0, -2));
     const rows = json.table.rows;
