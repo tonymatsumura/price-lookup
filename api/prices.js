@@ -20,6 +20,7 @@ export default async function handler(req, res) {
       preco: row.c[1]?.v || "",
       thumbnail: row.c[2]?.v || "",
       data: row.c[3]?.v || "",
+      supermarket: row.c[4]?.v || "",
     }));
 
     res.status(200).json(data);
