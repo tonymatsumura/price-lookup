@@ -109,7 +109,9 @@
             item => `
             <div class="result">
               ${item.produto || "—"}<br>          
+              <strong style="font-size:0.9em;">
               R$ ${item.preco ? Number(item.preco).toFixed(2) : "—"}<br>  
+              </strong>
               ${item.data || "—"}<br>
               ${item.supermarket || "—"}<br>
               <img src=${item.thumbnail || "—"}
