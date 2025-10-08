@@ -35,7 +35,7 @@ input[type="text"] {
   display: flex;  
   align-items: center;
   justify-content: space-between;
-  flex-direction: row-reverse;
+  flex-direction: row;
   background: white;
   border-radius: 8px;
   padding: 1rem;
