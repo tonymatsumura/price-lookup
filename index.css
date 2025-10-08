@@ -32,8 +32,10 @@ input[type="text"] {
 
 .result {
   font-size: 1.2rem;
-  display: flex;
+  display: flex;  
   align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
   background: white;
   border-radius: 8px;
   padding: 1rem;
@@ -45,7 +47,7 @@ input[type="text"] {
 .result img {
   max-width: 100px;
   height: auto;
-  margin-right: 1rem;
+  margin-left: 1rem;
   border-radius: 5px;
 }
 
