@@ -109,7 +109,7 @@
             item => `
             <div class="result">
               ${item.produto || "—"}<br>          
-              R$ ${item.preco || "—"}<br>  
+              R$ ${item.preco ? Number(item.preco).toFixed(2) : "—"}<br>  
               ${item.data || "—"}<br>
               ${item.supermarket || "—"}<br>
               <img src=${item.thumbnail || "—"}
